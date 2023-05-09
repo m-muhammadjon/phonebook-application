@@ -136,6 +136,36 @@ public:
         }
     }
 
+    void deleteContact(int id) {
+        for (int i = 0; i < contacts.size(); i++) {
+            if (contacts[i].getId() == id) {
+                contacts.erase(contacts.begin() + i);
+                cout << "Contact deleted!" << endl;
+                return;
+            }
+        }
+
+        cout << "Contact not found!" << endl;
+    }
+
+    // updates database.dat file with current contacts
+    void updateDatabase() {
+        ofstream wf("database.dat", ios::binary);
+        for (int i = 0; i < contacts.size(); i++) {
+            wf.write(to_string(contacts[i].getId()).c_str(), to_string(contacts[i].getId()).size());
+            wf.write("|", 1);
+            wf.write(contacts[i].getName().c_str(), contacts[i].getName().size());
+            wf.write("|", 1);
+            wf.write(contacts[i].getAddress().c_str(), contacts[i].getAddress().size());
+            wf.write("|", 1);
+            wf.write(contacts[i].getEmail().c_str(), contacts[i].getEmail().size());
+            wf.write("|", 1);
+            wf.write(contacts[i].getPhone().c_str(), contacts[i].getPhone().size());
+            wf.write("\n", 1);
+        }
+        wf.close();
+    }
+
     vector<Contact> getContacts() {
         return contacts;
     }
@@ -156,7 +186,7 @@ int main() {
     string line;
     while (getline(rf, line)) {
         stringstream ss(line);
-        cout << ss.str() << endl;
+//        cout << ss.str() << endl;
         string id, name, address, email, phone;
         getline(ss, id, '|');
         getline(ss, name, '|');
@@ -216,6 +246,16 @@ int main() {
             cout << "Contact added successfully!" << endl;
         } else if (choice == 2) {
             phonebook.displayAsDatabase();
+        } else if (choice == 3) {
+            cout << "Enter contact id: ";
+            int id;
+            cin >> id;
+            phonebook.deleteContact(id);
+            phonebook.updateDatabase();
+
+
+        } else if (choice == 4) {
+            throw "Not implemented yet!";
         } else if (choice == 5) {
             cout << "Thank you for using our program!" << endl;
             break;
