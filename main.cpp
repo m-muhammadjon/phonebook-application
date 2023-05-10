@@ -81,11 +81,18 @@ public:
     }
 
     void print() {
+        cout << endl;
+        cout << "-----------------------------" << endl;
+        cout << "ID: " << id << endl;
         cout << "Name: " << name << endl;
         cout << "Address: " << address << endl;
         cout << "Email: " << email << endl;
         cout << "Phone: " << phone << endl;
+        cout << "-----------------------------" << endl;
+        cout << endl;
     }
+
+
 };
 
 
@@ -193,6 +200,9 @@ public:
     void updateContact(int id) {
         for (int i = 0; i < contacts.size(); i++) {
             if (contacts[i].getId() == id) {
+
+                contacts[i].print();
+
                 cout << "Enter new name or press enter to skip: ";
                 string name;
                 cin.ignore();
@@ -222,7 +232,7 @@ public:
                     contacts[i].setEmail(email);
                 }
                 phone_update_section:
-                cout << "Enter new phone or press enter to skip: ";
+                cout << "Enter new phone (Ex: +998991112233) or press enter to skip: ";
                 string phone;
                 getline(cin, phone);
                 if (phone != "") {
@@ -578,10 +588,8 @@ int main() {
                 } else if (choice2 == 5) {
                     break;
                 } else {
-                    cout << "Invalid choice!" << endl;
+                    cout << "\033[1;31mInvalid choice!\033[0m\n";
                 }
-
-
             }
         } else if (choice == 3) {
             phonebook.displayAsDatabase();
@@ -699,6 +707,5 @@ int main() {
             cout << "\033[31mInvalid choice!\033[0m" << endl;
         }
     }
-
     return 0;
 }
