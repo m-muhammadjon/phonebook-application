@@ -20,15 +20,16 @@ bool stringCompare(string str1, string str2) {
     return true;
 }
 
-//TRASH
-string string_strip(std::string s) {
-    if (s.empty()) {
-        return s;
-    }
-    int first = s.find_first_not_of(' ');
-    int last = s.find_last_not_of(' ');
-    return s.substr(first, (last - first + 1));
+bool isValidEmail(string email) {
+    const regex pattern(R"((\w+)(\.|_)?(\w*)@(\w+)(\.(\w+))+)");
+    return regex_match(email, pattern);
 }
+
+bool isValidPhoneNumber(const string &phoneNumber) {
+    const regex pattern(R"(^\+\d{12}$)");
+    return regex_match(phoneNumber, pattern);
+}
+
 
 vector<string> splitString(string str, string delimiter) {
     vector<string> result;
@@ -414,7 +415,8 @@ int main() {
         cout << "| 2. Display all contacts         |" << endl;
         cout << "| 3. Delete a contact             |" << endl;
         cout << "| 4. Search contact               |" << endl;
-        cout << "| 5. Exit                         |" << endl;
+        cout << "| 5. Update contact               |" << endl;
+        cout << "| 6. Exit                         |" << endl;
         cout << "+---------------------------------+" << endl;
         cout << endl;
         cout << "Enter your choice: ";
@@ -423,39 +425,71 @@ int main() {
         cout << endl;
         if (choice == 1) {
             string name, address, email, phone;
+            cin.ignore();
             name:
             cout << "Enter name: ";
-            cin.ignore();
             getline(cin, name);
             if (name.empty()) {
-                cout << "Name cannot be empty!" << endl;
+                cout << "\033[31mName cannot be empty!\033[0m" << endl;
                 goto name;
             }
             address:
             cout << "Enter address: ";
             getline(cin, address);
             if (address.empty()) {
-                cout << "Address cannot be empty!" << endl;
+                cout << "\033[31mAddress cannot be empty!\033[0m" << endl;
                 goto address;
             }
             email:
             cout << "Enter email: ";
             getline(cin, email);
             if (email.empty()) {
-                cout << "Email cannot be empty!" << endl;
+                cout << "\033[31mEmail cannot be empty!\033[0m" << endl;
                 goto email;
             }
+            bool email_exists = false;
+            for (Contact contact: phonebook.getContacts()) {
+                if (contact.getEmail() == email) {
+                    email_exists = true;
+                    break;
+                }
+            }
+            if (email_exists) {
+                cout << "\033[31mEmail already exists!\033[0m" << endl;
+                goto email;
+            }
+            if (isValidEmail(email) == false) {
+                cout << "\033[31mInvalid email!\033[0m" << endl;
+                goto email;
+            }
+
             phone:
             cout << "Enter phone: ";
             getline(cin, phone);
             if (phone.empty()) {
-                cout << "Phone cannot be empty!" << endl;
+                cout << "\033[31mPhone cannot be empty!\033[0m" << endl;
                 goto phone;
             }
+            bool phone_exists = false;
+            for (Contact contact: phonebook.getContacts()) {
+                if (contact.getPhone() == phone) {
+                    phone_exists = true;
+                    break;
+                }
+            }
+            if (phone_exists) {
+                cout << "\033[31mPhone number already exists!\033[0m" << endl;
+                goto phone;
+            }
+            if (isValidPhoneNumber(phone) == false) {
+                cout << "\033[31mInvalid phone number!\033[0m" << endl;
+                goto phone;
+            }
+
             Contact contact(name, address, email, phone, 0);
             phonebook.addContact(contact);
             addToDatabase(contact);
-            cout << "Contact added successfully!" << endl;
+            cout << "\033[32mContact added successfully!\033[0m" << endl;
         } else if (choice == 2) {
             phonebook.displayAsDatabase();
             while (true) {
@@ -540,10 +574,12 @@ int main() {
                 cout << "\tInvalid choice!" << endl;
             }
         } else if (choice == 5) {
+
+        } else if (choice == 6) {
             cout << "Thank you for using our program!" << endl;
             break;
         } else {
-            cout << "Invalid choice!" << endl;
+            cout << "Thank you for using our program!" << endl;
         }
     }
 
