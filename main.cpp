@@ -10,15 +10,6 @@ bool icontains(const string &str1, const string &str2) {
     return (it != str1.end());
 }
 
-bool stringCompare(string str1, string str2) {
-    if (str1.length() != str2.length())
-        return false;
-    for (int i = 0; i < str1.length(); i++) {
-        if (tolower(str1[i]) != tolower(str2[i]))
-            return false;
-    }
-    return true;
-}
 
 bool isValidEmail(string email) {
     const regex pattern(R"((\w+)(\.|_)?(\w*)@(\w+)(\.(\w+))+)");
@@ -28,22 +19,6 @@ bool isValidEmail(string email) {
 bool isValidPhoneNumber(const string &phoneNumber) {
     const regex pattern(R"(^\+\d{12}$)");
     return regex_match(phoneNumber, pattern);
-}
-
-
-vector<string> splitString(string str, string delimiter) {
-    vector<string> result;
-    if (stringCompare(str, delimiter)) {
-        result.push_back("");
-        result.push_back("");
-        return result;
-    }
-    string first_part = str.substr(0, str.find(delimiter));
-    string last_part = str.substr(str.find(delimiter) + delimiter.length(), str.size());
-    result.push_back(first_part);
-    result.push_back(last_part);
-
-    return result;
 }
 
 
@@ -151,8 +126,8 @@ public:
         }
     }
 
-    void displayAsDatabase(bool all = true, vector<int> ids = vector<int>(), string field = "",
-                           string value = "", string row_name = "", string row_value = "") {
+    void
+    displayAsDatabase(bool all = true, vector<int> ids = vector<int>(), string row_name = "", string row_value = "") {
         if (contacts.empty()) {
             cout << "\033[1;31mNo contact found!\033[0m" << endl;
             return;
@@ -193,13 +168,7 @@ public:
                 for (int j = 0; j < contacts.size(); j++) {
                     if (contacts[j].getId() == ids[i]) {
                         cout << left << setw(5) << contacts[j].getId() << "|";
-                        if (field == "name") {
-                            vector<string> slice = splitString(contacts[j].getName(), value);
-                            string res = slice[0] + "\033[1;33m" + value + "\033[0m" + slice[1];
-                            cout << left << setw(20) << res << "|";
-                        } else {
-                            cout << left << setw(20) << contacts[j].getName() << "|";
-                        }
+                        cout << left << setw(20) << contacts[j].getName() << "|";
                         cout << left << setw(30) << contacts[j].getAddress() << "|";
                         cout << left << setw(30) << contacts[j].getEmail() << "|";
                         cout << left << setw(15) << contacts[j].getPhone() << endl;
@@ -409,7 +378,7 @@ public:
             ids.push_back(contact.getId());
         }
         string char_asc_or_desc = asc ? "⌄  " : "⌃  ";
-        displayAsDatabase(false, ids, "", "", "name", char_asc_or_desc);
+        displayAsDatabase(false, ids, "name", char_asc_or_desc);
 
     }
 
@@ -431,7 +400,7 @@ public:
             ids.push_back(contact.getId());
         }
         string char_asc_or_desc = asc ? "⌄  " : "⌃  ";
-        displayAsDatabase(false, ids, "", "", "id", char_asc_or_desc);
+        displayAsDatabase(false, ids, "id", char_asc_or_desc);
 
     }
 
@@ -504,6 +473,12 @@ int main() {
         int choice;
         cin >> choice;
         cout << endl;
+        if (cin.fail()) {
+            cout << "\033[1;31mInvalid input. Please enter an integer value.\033[0m\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
         if (choice == 1) {
             string name, address, email, phone;
             cin.ignore();
@@ -586,6 +561,12 @@ int main() {
                 int choice2;
                 cin >> choice2;
                 cout << endl;
+                if (cin.fail()) {
+                    cout << "\033[1;31mInvalid input. Please enter an integer value.\033[0m\n";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    continue;
+                }
                 if (choice2 == 1) {
                     phonebook.sortByName(true);
                 } else if (choice2 == 2) {
@@ -603,10 +584,18 @@ int main() {
 
             }
         } else if (choice == 3) {
+            phonebook.displayAsDatabase();
+            cout << endl;
             delete_contact:
             cout << "Enter contact id to delete or type 0 to cancel, type -1 to move search section: ";
             int id;
             cin >> id;
+            if (cin.fail()) {
+                cout << "\033[1;31mInvalid input. Please enter an integer value.\033[0m\n";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
+            }
             if (id == 0) {
                 continue;
             } else if (id == -1) {
@@ -615,6 +604,8 @@ int main() {
             phonebook.deleteContact(id);
             phonebook.updateDatabase();
         } else if (choice == 4) {
+            phonebook.displayAsDatabase();
+            cout << endl;
             search_section:
             while (true) {
                 cout << "\t1. Search by name" << endl;
@@ -630,6 +621,12 @@ int main() {
                 int choice4;
                 cin >> choice4;
                 cout << endl;
+                if (cin.fail()) {
+                    cout << "\033[1;31mInvalid input. Please enter an integer value.\033[0m\n";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    continue;
+                }
                 if (choice4 == 1) {
                     string name;
                     cout << "\tEnter name: ";
@@ -658,6 +655,12 @@ int main() {
                     int id;
                     cout << "\tEnter id: ";
                     cin >> id;
+                    if (cin.fail()) {
+                        cout << "\033[1;31mInvalid input. Please enter an integer value.\033[0m\n";
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        continue;
+                    }
                     phonebook.searchById(id);
                 } else if (choice4 == 6) {
                     goto delete_contact;
@@ -670,10 +673,17 @@ int main() {
                 }
             }
         } else if (choice == 5) {
+            phonebook.displayAsDatabase();
             update_contact:
             cout << "Enter contact id to update or type 0 to cancel, type -1 to move search section: ";
             int id;
             cin >> id;
+            if (cin.fail()) {
+                cout << "\033[1;31mInvalid input. Please enter an integer value.\033[0m\n";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                continue;
+            }
             if (id == 0) {
                 continue;
             } else if (id == -1) {
