@@ -221,6 +221,59 @@ public:
         cout << "Contact not found!" << endl;
     }
 
+    void updateContact(int id) {
+        for (int i = 0; i < contacts.size(); i++) {
+            if (contacts[i].getId() == id) {
+                cout << "Enter new name or press enter to skip: ";
+                string name;
+                cin.ignore();
+                getline(cin, name);
+                if (name != "") {
+                    contacts[i].setName(name);
+                }
+                cout << "Enter new address or press enter to skip: ";
+                string address;
+                getline(cin, address);
+                if (address != "") {
+                    contacts[i].setAddress(address);
+                }
+                email_update_section:
+                cout << "Enter new email or press enter to skip: ";
+                string email;
+                getline(cin, email);
+                if (email != "") {
+                    if (!isValidEmail(email)) {
+                        cout << "\033[31mInvalid email!\033[0m" << endl;
+                        goto email_update_section;
+                    }
+                    if (checkEmailExists(email)) {
+                        cout << "\033[31mEmail already exists!\033[0m" << endl;
+                        goto email_update_section;
+                    }
+                    contacts[i].setEmail(email);
+                }
+                phone_update_section:
+                cout << "Enter new phone or press enter to skip: ";
+                string phone;
+                getline(cin, phone);
+                if (phone != "") {
+                    if (!isValidPhoneNumber(phone)) {
+                        cout << "\033[31mInvalid phone!\033[0m" << endl;
+                        goto phone_update_section;
+                    }
+                    if (checkPhoneExists(phone)) {
+                        cout << "\033[31mPhone already exists!\033[0m" << endl;
+                        goto phone_update_section;
+                    }
+                    contacts[i].setPhone(phone);
+                }
+                cout << "\033[32mContact updated!\033[0m" << endl;
+                return;
+            }
+        }
+        cout << "\033[31mContact not found!\033[0m" << endl;
+    }
+
     // updates database.dat file with current contacts
     void updateDatabase() {
         ofstream wf("database.dat", ios::binary);
@@ -253,8 +306,9 @@ public:
             cout << "\033[1;31mNo contact found!\033[0m" << endl;
             return;
         } else {
-
-//            displayAsDatabase(false, ids, "name", name);
+            cout << "\033[1;33m";
+            cout << ids.size() << " contacts found with name \"" << name << "\"" << endl;
+            cout << "\033[0m";
             displayAsDatabase(false, ids);
         }
     }
@@ -272,6 +326,9 @@ public:
             cout << "\033[1;31mNo contact found!\033[0m" << endl;
             return;
         } else {
+            cout << "\033[1;33m";
+            cout << ids.size() << " contacts found with address \"" << address << "\"" << endl;
+            cout << "\033[0m";
             displayAsDatabase(false, ids);
         }
     }
@@ -289,6 +346,9 @@ public:
             cout << "\033[1;31mNo contact found!\033[0m" << endl;
             return;
         } else {
+            cout << "\033[1;33m";
+            cout << ids.size() << " contacts found with email \"" << email << "\"" << endl;
+            cout << "\033[0m";
             displayAsDatabase(false, ids);
         }
     }
@@ -306,6 +366,9 @@ public:
             cout << "\033[1;31mNo contact found!\033[0m" << endl;
             return;
         } else {
+            cout << "\033[1;33m";
+            cout << ids.size() << " contacts found with phone \"" << phone << "\"" << endl;
+            cout << "\033[0m";
             displayAsDatabase(false, ids);
         }
 
@@ -372,6 +435,25 @@ public:
 
     }
 
+
+    bool checkEmailExists(string email) {
+        for (Contact contact: contacts) {
+            if (contact.getEmail() == email) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool checkPhoneExists(string phone) {
+        for (Contact contact: contacts) {
+            if (contact.getPhone() == phone) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     vector<Contact> getContacts() {
         return contacts;
     }
@@ -394,7 +476,6 @@ int main() {
     string line;
     while (getline(rf, line)) {
         stringstream ss(line);
-//        cout << ss.str() << endl;
         string id, name, address, email, phone;
         getline(ss, id, '|');
         getline(ss, name, '|');
@@ -522,64 +603,90 @@ int main() {
 
             }
         } else if (choice == 3) {
-            cout << "Enter contact id: ";
+            delete_contact:
+            cout << "Enter contact id to delete or type 0 to cancel, type -1 to move search section: ";
             int id;
             cin >> id;
+            if (id == 0) {
+                continue;
+            } else if (id == -1) {
+                goto search_section;
+            }
             phonebook.deleteContact(id);
             phonebook.updateDatabase();
         } else if (choice == 4) {
-            cout << "\t1. Search by name" << endl;
-            cout << "\t2. Search by address" << endl;
-            cout << "\t3. Search by email" << endl;
-            cout << "\t4. Search by phone" << endl;
-            cout << "\t5. Search by id" << endl;
-            cout << "\t6. Back to main menu" << endl;
-            cout << endl;
-            cout << "\tEnter your choice: ";
-            int choice4;
-            cin >> choice4;
-            cout << endl;
-            if (choice4 == 1) {
-                string name;
-                cout << "\tEnter name: ";
-                cin.ignore();
-                getline(cin, name);
-                phonebook.searchByName(name);
-            } else if (choice4 == 2) {
-                string address;
-                cout << "\tEnter address: ";
-                cin.ignore();
-                getline(cin, address);
-                phonebook.searchByAddress(address);
-            } else if (choice4 == 3) {
-                string email;
-                cout << "\tEnter email: ";
-                cin.ignore();
-                getline(cin, email);
-                phonebook.searchByEmail(email);
-            } else if (choice4 == 4) {
-                string phone;
-                cout << "\tEnter phone: ";
-                cin.ignore();
-                getline(cin, phone);
-                phonebook.searchByPhone(phone);
-            } else if (choice4 == 5) {
-                int id;
-                cout << "\tEnter id: ";
-                cin >> id;
-                phonebook.searchById(id);
-            } else if (choice4 == 6) {
-                continue;
-            } else {
-                cout << "\tInvalid choice!" << endl;
+            search_section:
+            while (true) {
+                cout << "\t1. Search by name" << endl;
+                cout << "\t2. Search by address" << endl;
+                cout << "\t3. Search by email" << endl;
+                cout << "\t4. Search by phone" << endl;
+                cout << "\t5. Search by id" << endl;
+                cout << "\t6. Delete contact" << endl;
+                cout << "\t7. Update contact" << endl;
+                cout << "\t8. Back to main menu" << endl;
+                cout << endl;
+                cout << "\tEnter your choice: ";
+                int choice4;
+                cin >> choice4;
+                cout << endl;
+                if (choice4 == 1) {
+                    string name;
+                    cout << "\tEnter name: ";
+                    cin.ignore();
+                    getline(cin, name);
+                    phonebook.searchByName(name);
+                } else if (choice4 == 2) {
+                    string address;
+                    cout << "\tEnter address: ";
+                    cin.ignore();
+                    getline(cin, address);
+                    phonebook.searchByAddress(address);
+                } else if (choice4 == 3) {
+                    string email;
+                    cout << "\tEnter email: ";
+                    cin.ignore();
+                    getline(cin, email);
+                    phonebook.searchByEmail(email);
+                } else if (choice4 == 4) {
+                    string phone;
+                    cout << "\tEnter phone: ";
+                    cin.ignore();
+                    getline(cin, phone);
+                    phonebook.searchByPhone(phone);
+                } else if (choice4 == 5) {
+                    int id;
+                    cout << "\tEnter id: ";
+                    cin >> id;
+                    phonebook.searchById(id);
+                } else if (choice4 == 6) {
+                    goto delete_contact;
+                } else if (choice4 == 7) {
+                    goto update_contact;
+                } else if (choice4 == 8) {
+                    break;
+                } else {
+                    cout << "\tInvalid choice!" << endl;
+                }
             }
         } else if (choice == 5) {
+            update_contact:
+            cout << "Enter contact id to update or type 0 to cancel, type -1 to move search section: ";
+            int id;
+            cin >> id;
+            if (id == 0) {
+                continue;
+            } else if (id == -1) {
+                goto search_section;
+            }
+            phonebook.updateContact(id);
+            phonebook.updateDatabase();
 
         } else if (choice == 6) {
-            cout << "Thank you for using our program!" << endl;
+            cout << "\033[34mThank you for using our program!\033[0m" << endl;
             break;
         } else {
-            cout << "Thank you for using our program!" << endl;
+            cout << "\033[31mInvalid choice!\033[0m" << endl;
         }
     }
 
