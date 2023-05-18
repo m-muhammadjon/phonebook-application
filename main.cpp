@@ -22,6 +22,18 @@ bool isValidPhoneNumber(const string &phoneNumber) {
 }
 
 
+void print_with_fixed_width(string value, int width) {
+    cout << value;
+    if (value.size() < width) {
+        for (int i = 0; i < width - value.size(); i++) cout << " ";
+    }
+}
+
+void print_str_n_times(string s, int n) {
+    for (int i = 0; i < n; i++) cout << s;
+}
+
+
 class Contact {
 private:
     string name, address, email, phone;
@@ -141,44 +153,63 @@ public:
         }
         if (row_name == "id") {
             string id = "ID" + row_value;
-            cout << left << setw(5) << id << "|";
+            print_with_fixed_width(id, 5);
+            cout << "|";
         } else {
-            cout << left << setw(5) << "ID" << "|";
+            print_with_fixed_width("ID", 5);
+            cout << "|";
         }
         if (row_name == "name") {
             string name = "Name" + row_value;
-            cout << left << setw(22) << name << "|";
+            print_with_fixed_width(name, 22);
+            cout << "|";
         } else {
-            cout << left << setw(20) << "Name" << "|";
+            print_with_fixed_width("Name", 20);
+            cout << "|";
         }
-        cout << left << setw(30) << "Address" << "|";
-        cout << left << setw(30) << "Email" << "|";
-        cout << left << setw(15) << "Phone" << endl;
-
-        cout << setfill('-') << setw(5) << "" << "";
-        cout << setfill('-') << setw(20) << "|" << "-";
-        cout << setfill('-') << setw(30) << "|" << "-";
-        cout << setfill('-') << setw(30) << "|" << "-";
-        cout << setfill('-') << setw(15) << "|" << endl;
-
-        cout << setfill(' ');
+        print_with_fixed_width("Address", 30);
+        cout << "|";
+        print_with_fixed_width("Email", 30);
+        cout << "|";
+        print_with_fixed_width("Phone", 15);
+        cout << endl;
+        print_str_n_times("-", 5);
+        cout << "+";
+        print_str_n_times("-", 20);
+        cout << "+";
+        print_str_n_times("-", 30);
+        cout << "+";
+        print_str_n_times("-", 30);
+        cout << "+";
+        print_str_n_times("-", 15);
+        cout << endl;
         if (all) {
             for (int i = 0; i < contacts.size(); i++) {
-                cout << left << setw(5) << contacts[i].getId() << "|";
-                cout << left << setw(20) << contacts[i].getName() << "|";
-                cout << left << setw(30) << contacts[i].getAddress() << "|";
-                cout << left << setw(30) << contacts[i].getEmail() << "|";
-                cout << left << setw(15) << contacts[i].getPhone() << endl;
+                print_with_fixed_width(to_string(contacts[i].getId()), 5);
+                cout << "|";
+                print_with_fixed_width(contacts[i].getName(), 20);
+                cout << "|";
+                print_with_fixed_width(contacts[i].getAddress(), 30);
+                cout << "|";
+                print_with_fixed_width(contacts[i].getEmail(), 30);
+                cout << "|";
+                print_with_fixed_width(contacts[i].getPhone(), 15);
+                cout << endl;
             }
         } else {
             for (int i = 0; i < ids.size(); i++) {
                 for (int j = 0; j < contacts.size(); j++) {
                     if (contacts[j].getId() == ids[i]) {
-                        cout << left << setw(5) << contacts[j].getId() << "|";
-                        cout << left << setw(20) << contacts[j].getName() << "|";
-                        cout << left << setw(30) << contacts[j].getAddress() << "|";
-                        cout << left << setw(30) << contacts[j].getEmail() << "|";
-                        cout << left << setw(15) << contacts[j].getPhone() << endl;
+                        print_with_fixed_width(to_string(contacts[j].getId()), 5);
+                        cout << "|";
+                        print_with_fixed_width(contacts[j].getName(), 20);
+                        cout << "|";
+                        print_with_fixed_width(contacts[j].getAddress(), 30);
+                        cout << "|";
+                        print_with_fixed_width(contacts[j].getEmail(), 30);
+                        cout << "|";
+                        print_with_fixed_width(contacts[j].getPhone(), 15);
+                        cout << endl;
                     }
                 }
             }
