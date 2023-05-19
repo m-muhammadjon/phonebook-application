@@ -4,10 +4,34 @@ using namespace std;
 int LAST_ID = 1;
 
 // helper functions
-bool icontains(const string &str1, const string &str2) {
-    auto it = search(str1.begin(), str1.end(), str2.begin(), str2.end(),
-                     [](char ch1, char ch2) { return tolower(ch1) == tolower(ch2); });
-    return (it != str1.end());
+bool icontains(const string& str1, const string& str2) {
+    string lowercaseStr1;
+    for (char ch : str1) {
+        lowercaseStr1 += tolower(ch);
+    }
+
+    string lowercaseStr2;
+    for (char ch : str2) {
+        lowercaseStr2 += tolower(ch);
+    }
+
+    size_t len1 = lowercaseStr1.length();
+    size_t len2 = lowercaseStr2.length();
+
+    for (size_t i = 0; i <= len1 - len2; ++i) {
+        size_t j;
+        for (j = 0; j < len2; ++j) {
+            if (lowercaseStr1[i + j] != lowercaseStr2[j]) {
+                break;
+            }
+        }
+
+        if (j == len2) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
